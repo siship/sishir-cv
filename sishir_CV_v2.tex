@@ -1,0 +1,705 @@
+
+% Don't like 10pt? Try 11pt or 12pt
+\documentclass[10pt]{article}
+\RequirePackage[T1]{fontenc}
+
+% This is a helpful package that puts math inside length specifications
+\usepackage{calc}
+
+% Layout: Puts the section titles on left side of page
+\reversemarginpar
+
+%
+%         PAPER SIZE, PAGE NUMBER, AND DOCUMENT LAYOUT NOTES:
+%
+% The next \usepackage line changes the layout for CV style section
+% headings as marginal notes. It also sets up the paper size as either
+% letter or A4. By default, letter was used. If A4 paper is desired,
+% comment out the letterpaper lines and uncomment the a4paper lines.
+%
+% As you can see, the margin widths and section title widths can be
+% easily adjusted.
+%
+% ALSO: Notice that the includefoot option can be commented OUT in order
+% to put the PAGE NUMBER *IN* the bottom margin. This will make the
+% effective text area larger.
+%
+% IF YOU WISH TO REMOVE THE ``of LASTPAGE'' next to each page number,
+% see the note about the +LP and -LP lines below. Comment out the +LP
+% and uncomment the -LP.
+%
+% IF YOU WISH TO REMOVE PAGE NUMBERS, be sure that the includefoot line
+% is uncommented and ALSO uncomment the \pagestyle{empty} a few lines
+% below.
+%
+
+%% Use these lines for letter-sized paper
+\usepackage[paper=letterpaper,
+            %includefoot, % Uncomment to put page number above margin
+            marginparwidth=1.2in,     % Length of section titles
+            marginparsep=.05in,       % Space between titles and text
+            margin=1in,               % 1 inch margins
+            includemp]{geometry}
+
+%% Use these lines for A4-sized paper
+%\usepackage[paper=a4paper,
+%            %includefoot, % Uncomment to put page number above margin
+%            marginparwidth=30.5mm,    % Length of section titles
+%            marginparsep=1.5mm,       % Space between titles and text
+%            margin=25mm,              % 25mm margins
+%            includemp]{geometry}
+
+%% More layout: Get rid of indenting throughout entire document
+\setlength{\parindent}{0in}
+
+\usepackage[shortlabels]{enumitem}
+
+% Simpler bibsections for CV sections
+% (thanks to natbib for inspiration)
+%
+% * For lists of references with hanging indents and no numbers:
+%
+%   \begin{bibsection}
+%       \item ...
+%   \end{bibsection}
+%
+% * For numbered lists of references (with hanging indents):
+%
+%   \begin{bibenum}
+%       \item ...
+%   \end{bibenum}
+%
+%   Note that bibenum numbers continuously throughout. To reset the
+%   counter, use
+%
+%   \restartlist{bibenum}
+%
+%   at the place where you want the numbering to reset.
+
+\makeatletter
+\newlength{\bibhang}
+\setlength{\bibhang}{1em}
+\newlength{\bibsep}
+ {\@listi \global\bibsep\itemsep \global\advance\bibsep by\parsep}
+\newlist{bibsection}{itemize}{3}
+\setlist[bibsection]{label=,leftmargin=\bibhang,%
+        itemindent=-\bibhang,
+        itemsep=\bibsep,parsep=\z@,partopsep=0pt,
+        topsep=0pt}
+\newlist{bibenum}{enumerate}{3}
+\setlist[bibenum]{label=[\arabic*],resume,leftmargin={\bibhang+\widthof{[999]}},%
+        itemindent=-\bibhang,
+        itemsep=\bibsep,parsep=\z@,partopsep=0pt,
+        topsep=0pt}
+\let\oldendbibenum\endbibenum
+\def\endbibenum{\oldendbibenum\vspace{-.6\baselineskip}}
+\let\oldendbibsection\endbibsection
+\def\endbibsection{\oldendbibsection\vspace{-.6\baselineskip}}
+\makeatother
+
+%% Reference the last page in the page number
+%
+% NOTE: comment the +LP line and uncomment the -LP line to have page
+%       numbers without the ``of ##'' last page reference)
+%
+% NOTE: uncomment the \pagestyle{empty} line to get rid of all page
+%       numbers (make sure includefoot is commented out above)
+%
+\usepackage{fancyhdr,lastpage}
+\pagestyle{fancy}
+%\pagestyle{empty}      % Uncomment this to get rid of page numbers
+\fancyhf{}\renewcommand{\headrulewidth}{0pt}
+\fancyfootoffset{\marginparsep+\marginparwidth}
+\newlength{\footpageshift}
+\setlength{\footpageshift}
+          {0.5\textwidth+0.5\marginparsep+0.5\marginparwidth-2in}
+\lfoot{\hspace{\footpageshift}%
+       \parbox{4in}{\, \hfill %
+                    \arabic{page} of \protect\pageref*{LastPage} % +LP
+%                    \arabic{page}                               % -LP
+                    \hfill \,}}
+
+% Finally, give us PDF bookmarks
+\usepackage{color,hyperref}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.3}
+\hypersetup{colorlinks,breaklinks,
+            linkcolor=darkblue,urlcolor=darkblue,
+            anchorcolor=darkblue,citecolor=darkblue}
+
+%%%%%%%%%%%%%%%%%%%%%%%% End Document Setup %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Helper Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% HEADING AT TOP OF CURRICULUM VITAE
+
+% The title (name) with a horizontal rule under it
+% (optional argument typesets an object right-justified across from name
+%  as well)
+%
+% Usage: \makeheading{name}
+%        OR
+%        \makeheading[right_object]{name}
+%
+% Place at top of document. It should be the first thing.
+% If ``right_object'' is provided in the square-braced optional
+% argument, it will be right justified on the same line as ``name'' at
+% the top of the CV. For example:
+%
+%       \makeheading[\emph{Curriculum vitae}]{Your Name}
+%
+% will put an emphasized ``Curriculum vitae'' at the top of the document
+% as a title. Likewise, a picture could be included:
+%
+%   \makeheading[\includegraphics[height=1.5in]{my_picutre}]{Your Name}
+%
+% the picture will be flush right across from the name.
+\newcommand{\makeheading}[2][]%
+        {\hspace*{-\marginparsep minus \marginparwidth}%
+         \begin{minipage}[t]{\textwidth+\marginparwidth+\marginparsep}%
+             {\LARGE \bfseries #2 \hfill #1}\\[-0.15\baselineskip]%
+                 \rule{\columnwidth}{1pt}%
+         \end{minipage}}
+
+%%% SECTION HEADINGS
+
+% The section headings. Flush left in small caps down pseudo-margin.
+%
+% Usage: \section{section name}
+\renewcommand{\section}[1]{\pagebreak[3]%
+    \vspace{1.3\baselineskip}%
+    \phantomsection\addcontentsline{toc}{section}{#1}%
+    \noindent\llap{\scshape\smash{\parbox[t]{\marginparwidth}{\hyphenpenalty=10000\raggedright #1}}}%
+    \vspace{-\baselineskip}\par}
+
+%%% LISTS
+
+% This macro alters a list by removing some of the space that follows the list
+% (is used by lists below)
+\newcommand*\fixendlist[1]{%
+    \expandafter\let\csname preFixEndListend#1\expandafter\endcsname\csname end#1\endcsname
+    \expandafter\def\csname end#1\endcsname{\csname preFixEndListend#1\endcsname\vspace{-0.6\baselineskip}}}
+
+% These macros help ensure that items in outer-type lists do not get
+% separated from the next line by a page break
+% (they are used by lists below)
+\let\originalItem\item
+\newcommand*\fixouterlist[1]{%
+    \expandafter\let\csname preFixOuterList#1\expandafter\endcsname\csname #1\endcsname
+    \expandafter\def\csname #1\endcsname{\csname preFixOuterList#1\endcsname\let\oldItem\item\def\item{\pagebreak[2]\oldItem}}
+    \expandafter\let\csname preFixOuterListend#1\expandafter\endcsname\csname end#1\endcsname
+    \expandafter\def\csname end#1\endcsname{\let\item\oldItem\csname preFixOuterListend#1\endcsname}}
+\newcommand*\fixinnerlist[1]{%
+    \expandafter\let\csname preFixInnerList#1\expandafter\endcsname\csname #1\endcsname
+    \expandafter\def\csname #1\endcsname{\let\oldItem\item\let\item\originalItem\csname preFixInnerList#1\endcsname}
+    \expandafter\let\csname preFixInnerListend#1\expandafter\endcsname\csname end#1\endcsname
+    \expandafter\def\csname end#1\endcsname{\csname preFixInnerListend#1\endcsname\let\item\oldItem}}
+
+% An itemize-style list with lots of space between items
+%
+% Usage:
+%   \begin{outerlist}
+%       \item ...    % (or \item[] for no bullet)
+%   \end{outerlist}
+\newlist{outerlist}{itemize}{3}
+    \setlist[outerlist]{label=\enskip\textbullet,leftmargin=*}
+    \fixendlist{outerlist}
+    \fixouterlist{outerlist}
+
+% An environment IDENTICAL to outerlist that has better pre-list spacing
+% when used as the first thing in a \section
+%
+% Usage:
+%   \begin{lonelist}
+%       \item ...    % (or \item[] for no bullet)
+%   \end{lonelist}
+\newlist{lonelist}{itemize}{3}
+    \setlist[lonelist]{label=\enskip\textbullet,leftmargin=*,partopsep=0pt,topsep=0pt}
+    \fixendlist{lonelist}
+    \fixouterlist{lonelist}
+
+% An itemize-style list with little space between items
+%
+% Usage:
+%   \begin{innerlist}
+%       \item ...    % (or \item[] for no bullet)
+%   \end{innerlist}
+\newlist{innerlist}{itemize}{3}
+    \setlist[innerlist]{label=\enskip\textbullet,leftmargin=*,parsep=0pt,itemsep=0pt,topsep=0pt,partopsep=0pt}
+    \fixinnerlist{innerlist}
+
+% An environment IDENTICAL to innerlist that has better pre-list spacing
+% when used as the first thing in a \section
+%
+% Usage:
+%   \begin{loneinnerlist}
+%       \item ...    % (or \item[] for no bullet)
+%   \end{loneinnerlist}
+\newlist{loneinnerlist}{itemize}{3}
+    \setlist[loneinnerlist]{label=\enskip\textbullet,leftmargin=*,parsep=0pt,itemsep=0pt,topsep=0pt,partopsep=0pt}
+    \fixendlist{loneinnerlist}
+    \fixinnerlist{loneinnerlist}
+
+%%% EXTRA SPACE
+
+% To add some paragraph space between lines.
+% This also tells LaTeX to preferably break a page on one of these gaps
+% if there is a needed pagebreak nearby.
+\newcommand{\blankline}{\quad\pagebreak[3]}
+\newcommand{\halfblankline}{\quad\vspace{-0.5\baselineskip}\pagebreak[3]}
+
+%%% FORMATTING MACROS
+
+% Uses hyperref to link DOI
+\newcommand\doilink[1]{\href{http://dx.doi.org/#1}{#1}}
+\newcommand\doi[1]{doi:\doilink{#1}}
+
+% For \url{SOME_URL}, links SOME_URL to the url SOME_URL
+\providecommand*\url[1]{\href{#1}{#1}}
+% Same as above, but pretty-prints SOME_URL in teletype fixed-width font
+\renewcommand*\url[1]{\href{#1}{\texttt{#1}}}
+
+% For \email{ADDRESS}, links ADDRESS to the url mailto:ADDRESS
+\providecommand*\email[1]{\href{mailto:#1}{#1}}
+% Same as above, but pretty-prints ADDRESS in teletype fixed-width font
+%\renewcommand*\email[1]{\href{mailto:#1}{\texttt{#1}}}
+
+%\providecommand\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+%    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+%\providecommand\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+%    \TeX}}
+\providecommand\BibTeX{{B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    \TeX}}
+\providecommand\Matlab{\textsc{Matlab}}
+
+% Custom hyphenation rules for words that LaTeX has trouble with
+\hyphenation{bio-mim-ic-ry bio-in-spi-ra-tion re-us-a-ble pro-vid-er}
+
+%%%%%%%%%%%%%%%%%%%%%%%% End Helper Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Begin CV Document %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\makeheading{Sishir Kalita}
+
+\section{Contact Information}
+
+% NOTE: Mind where the & separators and \\ breaks are in the following
+%       table. Table is one row made up of three parboxes. The left
+%       parbox has address info, the middle parbox has a vertical bar,
+%       and the right parbox has phone and electronic contact
+%       information.
+%
+% MACROS: \rcollength is the width of the right column of the table
+%             (adjust it to your liking; default is 1.85in).
+%         \spacewidth is width of area between left and right boxes.
+%         \spacechar is character used to produce perforated vertical
+%             boundary between boxes.
+%
+\newlength{\rcollength}\setlength{\rcollength}{1.40in}%
+\newlength{\spacewidth}\setlength{\spacewidth}{20pt}
+\newcommand\spacechar{$|$}
+%
+\begin{tabular}[t]{@{}p{\textwidth-\rcollength-\spacewidth}@{}p{\spacewidth}@{}p{\rcollength}}%
+
+% Address box
+\parbox{\textwidth-\rcollength-\spacewidth}{%
+
+Data Scientist\\ \\
+{Armsoftech.air}, 
+{Chennai}\\
+%Guwahati, Kamrup, Assam-781039\\ 
+\textit{Mobile:} +91-94353-79331\\
+\textit{e-mail:} {sisiitg@gmail.com}}
+
+
+\end{tabular}
+
+%%
+%% In modern CV's, it seems like ``Objective'' is frowned upon. Instead,
+%% incorporate it into a well-constructed cover letter. The ``More
+%% information'' can go at the end of the CV, but it should not distract
+%% from the section giving references available to contact.
+ \line(1,0){380} 
+
+% \section{Objective}
+% 
+% Placement in an industrial research and development position that allows advanced research in the area of signal processing and its applications
+
+% \begin{innerlist}
+% \item More information and auxiliary documents can be found at\\\url{http://www.tedpavlic.com/facjobsearch/}
+% \end{innerlist}
+\section{Research Interests}
+Speech Technology, Pathological Speech Processing, Machine Learning \\
+
+\line(1,0){380} 
+
+\section{Education}
+\begin{itemize}
+ \item \textbf{Ph.D.} (2014 August -- 2019 November)\\
+     Dept. of Electronics and Electrical Engineering, \\
+         Indian Institute of Technology Guwahati, Assam (India)  
+
+                  \begin{itemize}
+         \item Thesis Title: \emph{Objective assessment of cleft lip and palate speech intelligibility}
+     \item Supervisors: Prof. S. R. Mahadeva Prasanna \& Prof. S. Dandapat
+    %  \item Overview: This thesis aims to derive a set of objective intelligibility measures based on the acoustic analysis of speech for cleft lip and palate (CLP) individuals. Cleft lip and palate (CLP) is one of the most common congenital disorders of the craniofacial region. The speech of individuals with CLP is primarily distorted due to the articulation error and hypernasality, which significantly reduced the speech intelligibility. Motivated by this observation, a composite measure of sentence-level intelligibility is proposed by combining the information of articulation deficits and hypernasality. Further, the performance of the intelligibility prediction algorithm is improved by incorporating the acoustic information extracted from the speech region around abrupt consonant landmarks. However, the performance of both the above methods is depended on the accurate detection of specific events, and it is noticed that results are sometimes inconsistent. To overcome these issues, methods are proposed based on the comparison of posterior sequences to measure the intelligibility. Two comparison based frameworks using DTW and matching of self-similarity matrices are proposed to quantify the intelligibility. Finally, a visual representation based on the spider plot is proposed for graphing the intelligibility scores. Each polygon of the spider plot represents intelligibility space of the speaker.
+         \item Cumulative GPA: 8.8 out of 10.0
+          \end{itemize}
+
+\item \textbf{M.Tech.}  (2012)\\
+Dept. of Electronics and Communication Engineering,\\
+         Tezpur University, Tezpur (India)\\
+         Rank: $2^{nd}$, (Cumulative GPA : 9.08 out of 10.0)
+
+\item \textbf{M.Sc.}  (2010)\\
+Dept. of Electronics and Communication Technology,\\
+         Gauhati University, Guwahati (India)\\
+         Rank: $4^{th}$, (Cumulative GPA : 8.56 out of 10.0)
+\end{itemize}   
+
+\line(1,0){380}
+
+\section{Relevant courses done:}
+\begin{itemize}
+ \item Digital signal processing, Speech technology, Probability and random process, Linear algebra and optimization, Pattern recognition and machine learning, and Biomedical signal processing.
+ \end{itemize}
+\line(1,0){380}
+
+\section{Associated Projects:}
+\begin{itemize}
+ \item ``NASOSPEECH: Development of a Diagnostic system for Severity Assessment of the Disordered Speech'' funded by the Department of Biotechnology, Govt. of India.
+ \item ``ARTICULATE +: A system for automated assessment and rehabilitation of persons with articulation disorders'' funded by the Ministry of Human Resource Development, Govt. of India.
+\end{itemize}
+
+\line(1,0){380} 
+
+\section{Journal Publications}
+\begin{bibenum}
+\bibitem{ss}
+Upashana Goswami, S. R. NirmalaEmail, C. M. Vikram, \textbf{Sishir Kalita}, S. R. M. Prasanna, \newblock ``Analysis of Articulation Errors in Dysarthric Speech'', {\em Journal of Psycholinguistic Research}, pp 1–12,  28 October (2019), DOI: 10.1007/s10936-019-09676-5.
+
+\bibitem{jasa1}
+\textbf{Sishir Kalita}, Girish K S, Pushpavathi M, S. R. M. Prasanna, S. Dandapat, \newblock ``Objective assessment of cleft lip and palate speech intelligibility using articulation and hypernasality measures'', {\em The Journal of the Acoustical Society of America}, 146(2), August (2019). 
+
+\bibitem{spectro_temporal_jasa}
+\textbf{Sishir Kalita}, S. R. M. Prasanna, S. Dandapat, ``Intelligibility assessment of cleft lip and palate speech using joint spectro-temporal features based gaussian posteriogram'', {\em The Journal of the Acoustical Society of America}, 144(4), October (2018), PMID: 30522275.
+
+\bibitem{landmark_jasael}
+\textbf{Sishir Kalita}, S. R. M. Prasanna, S. Dandapat, ``Importance of glottis landmark for the assessment of cleft lip and palate speech intelligibility'', {\em The Journal of the Acoustical Society of America}, 144(5), October (2018), PMID: 30404473.
+
+\bibitem{trill_paper}
+C M Vikram, Ayush Tripathy, \textbf{Sishir Kalita}, S. R. M. Prasanna,
+\newblock ``Acoustic analysis of misarticulated trills in cleft lip and palate children'',
+\newblock {\em The Journal of the Acoustical Society of America}, 143(6), EL474-EL480, June 2018, doi: 10.1121/1.5042339.
+
+%\bibitem{IJCA1}
+%J. L. Raheja, \textbf{Sishir Kalita}, Pallab Jyoti Dutta, Solanki Lovendra,
+%\newblock ``Robust Real Time People Tracking and Counting incorporating shadow detection and removal'',
+%\newblock {\em International Journal of Computer Applications (ISSN 0975-8887)}, Vol. 46 (5):51-58, May 2012.
+\end{bibenum}
+ \vspace{0.5cm}
+\line(1,0){380} 
+
+\section{Communicated Journals}
+\begin{bibenum}
+
+\item \textbf{Sishir Kalita}, Akhilesh Kumar Dubey, C. M. Vikram, Protima Nomo Sudra, S. R. M. Prasanna, and S. Dandapat, \newblock ``Excitation source based analysis of cleft lip and palate speech'', [In review, {\em Speech Communication}]. 
+
+%\item C. M. Vikram, \textbf{Sishir Kalita}, and S. R. M. Prasanna, \newblock ``Automatic Classification of Misarticulated stops in Cleft Lip and Palate Speech'', [In review, {\em IEEE Journal of Selected Topics in Signal Processing}]. 
+\end{bibenum}
+ \vspace{0.5cm}
+\line(1,0){380} 
+ 
+\section{Conference Publications}
+\begin{bibenum}
+ \bibitem{IS_2019_1}
+ \textbf{Sishir Kalita}, Protima Nomo Sudro, S. R. M. Prasanna and S. Dandapat,
+\newblock ``Nasal Air Emission in Sibilant Fricatives of Cleft Lip and Palate Speech''
+\newblock in {\em Proc. Interspeech 2019}, Graz, Austria, September 2019. 
+
+ \bibitem{IS_2018_0}
+ \textbf{Sishir Kalita}, S. R. M. Prasanna and S. Dandapat,
+\newblock ``Self-similarity matrix based intelligibility assessment of cleft lip and palate speech''
+\newblock in {\em Proc. Interspeech 2018}, Hyderabad, India, September 2018. 
+
+ \bibitem{IS_2018_1}
+\textbf{Sishir Kalita}, ``Objective assessment of cleft lip and palate speech intelligibility'', {\em 4$^{th}$ Doctoral consortium, Interspeech 2018}, Hyderabad, India, September 2018. 
+
+ \bibitem{IS_2018_2}
+ Protima Nomo Sudro, \textbf{Sishir Kalita}, S. R. M. Prasanna,
+\newblock ``Processing Transition Regions of Glottal Stop substituted /s/ for Intelligibility Enhancement of Cleft Palate Speech''
+\newblock in {\em Proc. Interspeech 2018}, Hyderabad, India, September 2018. 
+
+ \bibitem{IS_2018_3}
+ C. M. Vikram, Ayush Tripathi, \textbf{Sishir Kalita}, S. R. M. Prasanna,
+\newblock ``Estimation of Hypernasality Scores from Cleft Lip and Palate Speech''
+\newblock in {\em Proc. Interspeech 2018}, Hyderabad, India, September 2018. 
+
+ \bibitem{IS_2018_4}
+ Sarfaraz Jelil, \textbf{Sishir Kalita}, S. R. M. Prasanna and Rohit Sinha,
+\newblock ``Exploration of Compressed ILPR Features for Replay Attack Detection''
+\newblock in {\em Proc. Interspeech 2018}, Hyderabad, India, September 2018. 
+
+
+ \bibitem{IS_2018_5}
+ Pamir Gogoi, \textbf{Sishir Kalita}, Parismita Gogoi, Ratree Wayland, Priyankoo Sarmah, S. R. M. Prasanna,
+\newblock ``Analysis of Breathiness in Contextual Vowel of Voiceless Nasals in Mizo''
+\newblock in {\em Proc. Interspeech 2018}, Hyderabad, India, September 2018. 
+
+
+ \bibitem{WSPD_2018_1}
+ \textbf{Sishir Kalita}, Pushpavathi M, Ajish K Abraham, Girish K S, S. R. M. Prasanna, S Dandapat,
+\newblock ``Relative contribution of hypernasality, consonant production errors, and voice disorders on the intelligibility of cleft lip and palate speech''
+\newblock in {\em Proc. Workshop on Speech Processing for Voice, Speech and Hearing Disorders (WSPD)}, Mysuru, India, September 2018. 
+
+ \bibitem{IS_2017_1}
+ K Nikitha, \textbf{Sishir Kalita}, C. M. Vikram, M Pushpavathi, S. R. M. Prasanna,
+\newblock ``Hypernasality Severity Analysis in Cleft Lip and Palate Speech Using Vowel Space Area''
+\newblock in {\em Proc. Interspeech 2017}, Stockholm, Sweden, August 2017. 
+
+ \bibitem{IS_2017_2}
+ \textbf{Sishir Kalita},  W Lalhminghlui, Luke Horo, Priyankoo Sarmah, S. R. M. Prasanna, S. Dandapat,
+\newblock ``Acoustic   Characterization   of   Word-Final   Glottal   Stops   in   Mizo   and   Assam Sora''
+\newblock in {\em Proc. Interspeech 2017}, Stockholm, Sweden, August 2017. 
+
+ \bibitem{IS_2016_1}
+ \textbf{Sishir Kalita}, Luke Horo, Priyankoo Sarmah, S. R. M. Prasanna, S. Dandapat,
+\newblock ``Analysis of Glottal Stop in Assam Sora Language''
+\newblock in {\em Proc. Interspeech 2016}, San   Francisco, USA, September 2016. 
+
+ \bibitem{NCC_2016_1}
+ \textbf{Sishir Kalita}, S. R. M. Prasanna, S. Dandapat,
+\newblock ``Analysis of glottal stops using pitch   synchronous   integrated   linear   prediction   residual''
+\newblock in {\em Proc. National Conference on Communications (NCC)}, Guwahati, Assam, India, March 2016. 
+
+% \bibitem{ICAISC_2011_1}
+% \textbf{Sishir Kalita}, Parismita Gogoi, Kandarpa Kumar Sarma,
+%\newblock ``Convolutional Coding Using Booth   Algorithm   for   Application   in   Wireless   Communication''
+%\newblock in {\em Proc. International Conference on Artificial   Intelligence   \&   Soft   Computing}, Bhubaneswar, India, April 2011. 
+
+\end{bibenum}
+ \vspace{0.5cm}
+ \line(1,0){380}
+
+\section{Experiences}
+
+
+\textbf{Data Scientist},  \hfill \textbf{2019 November -- Present}\\ \\
+         %Department of Electronics \& Electrical Engineering, \\
+         Armsoftech.air, Chennai.  \\ 
+\underline{Activities involving}
+\begin{itemize}
+\item Development of automatic speech recognition (ASR) system for Indian languages.
+\item Development of speech emotion recognition system for the monitoring of all the calls in a call center.
+\item Development of language identification system for Indian context.
+\item Currently, I am using the Kaldi toolkit, Keras/TF, and Scikit-learn for development of speech technology systems. In this context, I am exploring the deep neural network based frameworks to develop the above-mentioned speech technologies.
+\end{itemize}
+
+\textbf{Research},  \hfill \textbf{2014 August -- Present}\\ \\
+         %Department of Electronics \& Electrical Engineering, \\
+         Indian Institute Technology Guwahati, Assam, India  \\ 
+\underline{Works done}
+\begin{itemize}
+\item Developed a pathological speech database from children with cleft lip and palate, and normal healthy children in collaboration with All India Institute of Speech \& Hearing (AIISH), Mysore, India.
+\item Developed algorithms for the objective assessment of speech intelligibility for cleft lip and palate individuals.
+\item Design of machine learning algorithms for the detection of hypernasal speech.
+\item A software developed by our group related to a Govt. of India funded project titled “NASOSPEECH: Development of a Diagnostic system for Severity Assessment of the Disordered Speech” is currently using by the speech-language pathologist in the diagnosis of hypernasality of cleft lip and palate at All India Institute of Speech \& Hearing, Mysuru, India.
+\item Supervised Masters students in their final project work related to pathological speech analysis.
+\item Supervised several interns of different parts of India to develop their knowledge about speech signal processing. 
+\end{itemize}
+
+\textbf{Teaching Assistant},  \hfill \textbf{2014 August -- Present}\\ \\
+         Department of Electronics \& Electrical Engg., \\
+         Indian Institute Technology Guwahati, Assam, India  \\ 
+\underline{Activities involved:}
+\begin{itemize}
+\item Assisted faculties in teaching undergraduate courses.
+\item Courses: (i) Electrical Sciences (include year and semester),  (ii) Signal and System (2 times), (iii) Speech Technology (1 time), (iv) Probability and Random Process (1 time), and (v) Digital Image Processing (1 time).
+\item Handling courses with the course instructors and problem formulation for tutorials, evaluation, project guidance and practical works.
+\item Assisted undergraduate students in the practical works.
+\item Supervised undergraduate students in final fourth year projects (2 students).\\
+\end{itemize}
+
+
+
+\textbf{Guest Faculty},  \hfill \textbf{2013 January -- July 2014}\\ \\
+         Department of Electronics \& Telecommunication Engg.,\\ Assam University, Assam, India  \\ 
+\underline{Activities involved:}
+\begin{itemize}
+\item Taught the undergraduate courses: (i) Basic Electronics,  (ii) Electrical Technology, (iii) Circuit Theory and Networks, (iv) Signals and Systems, (v) Analog Communication, (vi) Digital Communication, and (vii) Measurement and Instrumentation.
+\item Supervised undergraduate students in the lab works.
+\item Supervised undergraduate students in the final projects.\\
+\end{itemize}
+
+
+\textbf{Guest Faculty},  \hfill \textbf{2012 October -- 2012 December}\\ \\
+         Department of Basic Science \& Social Sciences,\\ North-East Hill University (NEHU), Meghalaya, India  \\ 
+\underline{Activities involved:}
+\begin{itemize}
+\item Taught the under graduate courses: (i) Basic Electronics, and (ii) Electrical Technology. 
+\end{itemize}
+ 
+\textbf{M.Tech Project Trainee},  \hfill \textbf{2011 July - 2012 Aril}\\ \\ 
+         Machine Vision Lab, CSIR-CEERI, Pilani, Rajasthan, India  \\ 
+         \textit{Supervisor:} Dr Ing. Jagdish Lal Raheja, Scientist\\ 
+\underline{Activities involved:}
+\begin{itemize}
+\item Developed the people tracking and counting systems, incorporating shadow detection and removal algorithms.
+\end{itemize}
+
+ \line(1,0){380}
+
+ 
+
+\section{Awards, \\Scholarships, \\ and Grants}
+\begin{itemize}
+\item Received international travel grant from Science and Engineering Research Board (SERB), Govt. of India for attending Interspeech 2019 conference, Graz, Austria.
+\item Received travel grant from Indian Speech Communication Association (IndSCA) for attending Interspeech 2019, Graz, Austria.
+ \item Received Microsoft Research India (MRI) travel grant for attending Interspeech 2017, Stockholm, Sweden.
+ \item Received International Speech Communication Association (ISCA) student travel grant for attending Interspeech 2017, Stockholm, Sweden.
+ \item Recipient of {\it Samsung Innovation Award 2015}, Samsung R\&D Institute, India--Bangalore
+ \item Recipient of MHRD, Govt. of India Scholarship (2014 - present) for pursuing Ph.D.
+ \item Recipient of North Eastern Council (NEC) Scholarship, Govt. of India, 2010-2012.
+\end{itemize}
+
+\line(1,0){380} 
+
+\section{Achievement}
+\begin{itemize}
+ \item A software developed by our group related to the project titled ``NASOSPEECH: Development of a Diagnostic system for Severity Assessment of the Disordered Speech'' is currently using by the speech-language pathologist in the diagnosis of hypernasality of cleft lip and palate at All India Institute of Speech \& Hearing, Mysuru, India.
+\end{itemize}
+
+
+\line(1,0){380} 
+
+
+\section{Invited Talk}
+\begin{itemize}
+ \item {\em Speech signal processing: its application \& scopes},  13th August, 2018, Department of Electronics Science, Lalit Chandra Bharali College, Guwahati. 
+\end{itemize}
+
+\line(1,0){380} 
+
+\section{Resource Person}
+\begin{itemize}
+ \item Short-term course on {\em Multimedia Signal Processing, and Selected topics on Control System}, 29th July, 2018,  Department of Electrical Engineering, Jorhat Engineering College, Jorhat, Assam, India.
+ \item National-level workshop on {\em MATLAB for all}, Department of Electronics and Communication Engineering, Gauhati University, Guwahati, Assam, India.
+\end{itemize}
+\line(1,0){380} 
+
+
+
+
+\section{Organizational Skills}
+\begin{itemize}
+ \item Technical program committee member for the {\em Workshop on Speech Processing for Voice, Speech and Hearing Disorders}, ( a satellite workshop of INTERSPEECH 2018) organized by All India Institute of Speech and Hearing (AIISH), Mysore, Karnataka, India, 8--9 September 2018.
+ 
+\item Student organizer in the Global Initiative of Academic Networks (GIAN) course on {\em Brain-computer interfaces for speech communication: theory and applications} organized by the Department of Electronics and Electrical Engineering, Indian Institute of Technology Guwahati and sponsored by MHRD, Govt. Of India, $26^{th}$ February -- $2^{nd}$ March, 2018.
+
+\item Student organizer in the Global Initiative of Academic Networks (GIAN) course on {\em Speech enhancement for hearing aids}  organized by the Department of Electronics \& Electrical Engineering, Indian Institute of Technology Guwahati and sponsored by MHRD, Govt. Of India, 23 -- 27 January 2018.
+\end{itemize}
+
+\line(1,0){380} 
+
+\section{Voluntary Services}
+\begin{itemize}
+\item Student volunteer in the Interspeech 2018, Hyderabad, India held during 2 -- 6  September 2018.
+\item Student volunteer in the Winter School on Speech and Audio Processing (WiSSAP 2018)  organized by the Center for Linguistic Science and Technology (CLST), Indian Institute of Technology Guwahati (IITG) held during 19 -- 22 January 2018.
+\end{itemize}
+\line(1,0){380} 
+
+
+\section{Professional Services/ Memberships}
+\begin{itemize}
+\item Reviewer:
+\begin{itemize}
+\item National Conference on Communications (NCC) 2017, Indian Institute of Technology Hyderabad, Hyderabad, India.
+\item IEEE Computational Intelligence Magazine
+\item Journal of Somatosensory \& Motor Research, Taylor \& Francis
+\end{itemize}
+\item Student member of IEEE, ISCA.
+\end{itemize}
+
+ \line(1,0){380} 
+
+\section{Skills}
+\begin{itemize}
+    \item \textbf{Speech processing tools:} PRAAT, Kaldi, Voicebox, VoiceSauce, LibROSA  
+\item \textbf{Machine learning tools:}  Keras, Tensorflow, LibSVM, Scikit-learn
+\item \textbf{Scripting:} UNIX shell scripting
+\item \textbf{Languages:} Matlab, Python
+\item \textbf{Desktop editing:} LaTeX, Microsoft Office, OpenOffice.org
+\item \textbf{Operating systems:} Microsoft Windows family, Linux variants 
+\end{itemize}
+ \line(1,0){380} 
+ 
+\section{Workshop and Conference attended}
+\begin{itemize}
+\item 3rd summer school on Automatic Speech Recognition, Indian Institute of Technology Guwahati, Guwahati, Assam, India, 02--07 June, 2019.
+
+\item Workshop on Speech Processing for Voice, Speech and Hearing Disorders, All India Institute of Speech and Hearing, Mysore, Karnataka, India, 8--9 September 2018
+
+\item 4th Doctoral Consortium, Interspeech 2018, Hyderabad, India, 1st September 2018
+
+\item Interspeech 2018, Hyderabad, India, 2--6  September 2018
+
+\item Global Initiative of Academic Networks course on Brain-computer interfaces for speech communication: theory and applications, Indian Institute of Technology Guwahati, Guwahati, Assam, India, $26^{th}$ Feb--$2^{nd}$ March 2018.
+
+\item Global Initiative of Academic Networks course on Speech enhancement for hearing aids, Indian Institute of Technology Guwahati, Assam, India, $23^{rd}$ Jan--$27^{th}$ January 2018.
+
+\item The Winter School on Speech and Audio Processing (WiSSAP 2018), Indian Institute of Technology Guwahati, Assam, India, 19--22 January 2018.
+
+
+\item Global Initiative of Academic Networks course on  Empirical mode decomposition and its applications, Indian Institute of Technology Guwahati, Assam, India, 23--27 October 2017.
+
+\item Interspeech 2017, Stockholm   University, Stockholm, Sweden, 20--24 August 2017.
+
+
+\item The 22nd Himalayan Languages Symposium (HLS), Indian Institute of Technology Guwahati, Assam, India, 8--10 June 2016.
+
+\item The 22nd  National Conference on Communications (NCC), Indian Institute of Technology Guwahati, Guwahati, Assam, India, 4--6 March 2016.
+
+
+\item Workshop on 3D Printing organized by   AerotriX, Indian   Institute of Technology, Guwahati, Assam, India, 21--22 March 2015.
+
+\item IEEE   ARM Workshop on Embedded System organized by   IEEE student branch at Indian Institute of Technology, Guwahati, Assam on 19--20 March 2015.
+
+
+\item MATLAB Fundamentals and Signal Processing, Assam University, Silchar, Assam, India, $28^{th}$ April--$2^{nd}$ May 2014.
+
+\item Fundamentals of LATEX, Assam University, Silchar, Assam, India, held in $25^{th}$ March 2014.
+
+\item Two weeks ISTE Workshop On  Signals And Systems, conducted by IIT Kharagpur under the National Education through ICT   (MHRD,   Govt.   of   India), 2--12 January 2014.
+
+
+\item Geographical Information System (GIS) And Environment For Visualizing Images (ENVI) Tools, Work Flows And Analysis, Assam University, Silchar, Assam, India, $16^{th}$--$27^{th}$   December 2013.
+
+\item Workshop on Image And Speech Processing (WISP 2013), Indian Institute of Technology, Guwahati (IITG), Assam, India, 13--14 December 2013.
+
+\item Advances in Document Analysis And Retrival, Institute of Science  and Technology,   Gauhati   University,   Guwahati, Assam, 7--11 March 2013 
+
+
+\item Embedded   Systems  And  Related   Applications  Institute of Science and Technology, Gauhati University, Guwahati, Assam, 16--25 July 2012.
+
+\item International Conference on Artificial Intelligence and Soft   Computing, Bhubaneswar, India, April 2011.
+
+\item Smart Nanostructures, Tezpur University, Tezpur, Assam, India, 18--20 Jan, 2011.
+
+\item Cybersecurity Indian   Institute of Technology, Guwahati (IITG), Assam, India, 11--12 March 2010.
+
+
+\end{itemize}
+
+
+% 
+% \section{Skills}
+%  \textbf{Speech processing tools:}  HTK, Bosaris, Aliz{\`e}, Spro, Kaldi  \\ \\%, Spro, Bosaris\\ \\
+% \textbf{Scripting:} UNIX shell scripting \\ \\
+% \textbf{Numerical Analysis:} Matlab \\ \\
+% \textbf{Desktop Editing:} LaTeX, Microsoft Office, OpenOffice.org \\ \\
+% \textbf{Operating Systems:} Microsoft Windows family, Linux variants 
+% \\ \line(1,0){380} 
+
+
+\end{document}
